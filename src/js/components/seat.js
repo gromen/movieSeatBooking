@@ -8,7 +8,7 @@ export default class Seat {
   }
 
   mount() {
-    this.mountSeats();
+    this.mountAllSeats();
     this.mountOccupiedSeats();
     this.attachEvents();
   }
@@ -27,7 +27,7 @@ export default class Seat {
     seat.classList.remove(this.CLASS_SEAT_SELECTED) :
     seat.classList.add(this.CLASS_SEAT_SELECTED);
 
-  mountSeats() {
+  mountAllSeats() {
     let seat;
 
     for (let i = 0; i < 40; i++) {
@@ -41,7 +41,7 @@ export default class Seat {
     this.seats = [...document.querySelectorAll('.js-c-seatBooking__seat')];
 
     for (let i = 0; i < 40; i++) {
-      this.seats[Math.floor(Math.random() * (20 - 1) + 1)].classList.add(this.CLASS_SEAT_OCCUPIED);
+      this.seats[Math.floor(Math.random() * 39 + 1)].classList.add(this.CLASS_SEAT_OCCUPIED);
     }
   }
 }
