@@ -1,6 +1,6 @@
 import './style.css'
 
-import './src/js/test';
+import '@js/test';
 
 document.querySelector('#app').innerHTML = `
   <h1>Hello Vite!</h1>
