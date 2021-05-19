@@ -1,6 +1,6 @@
 export default class Seat {
-  CLASS_SEAT_SELECTED = 'c-seatBooking__seat--selected';
-  CLASS_SEAT_OCCUPIED = 'c-seatBooking__seat--occupied';
+  CSS_SEAT_SELECTED = 'c-seatBooking__seat--selected';
+  CSS_SEAT_OCCUPIED = 'c-seatBooking__seat--occupied';
 
   constructor(classContainer) {
     this.container = document.querySelector(classContainer);
@@ -15,7 +15,7 @@ export default class Seat {
 
   attachEvents() {
     this.seats.forEach(seat => seat.addEventListener('click', () => {
-      if (seat.classList.contains(this.CLASS_SEAT_OCCUPIED)) {
+      if (seat.classList.contains(this.CSS_SEAT_OCCUPIED)) {
         return;
       }
 
@@ -23,9 +23,9 @@ export default class Seat {
     }))
   }
 
-  clickHandler = (seat) => seat.classList.contains(this.CLASS_SEAT_SELECTED) ?
-    seat.classList.remove(this.CLASS_SEAT_SELECTED) :
-    seat.classList.add(this.CLASS_SEAT_SELECTED);
+  clickHandler = (seat) => seat.classList.contains(this.CSS_SEAT_SELECTED) ?
+    seat.classList.remove(this.CSS_SEAT_SELECTED) :
+    seat.classList.add(this.CSS_SEAT_SELECTED);
 
   mountAllSeats() {
     let seat;
@@ -41,7 +41,7 @@ export default class Seat {
     this.seats = [...document.querySelectorAll('.js-c-seatBooking__seat')];
 
     for (let i = 0; i < 40; i++) {
-      this.seats[Math.floor(Math.random() * 39 + 1)].classList.add(this.CLASS_SEAT_OCCUPIED);
+      this.seats[Math.floor(Math.random() * 39 + 1)].classList.add(this.CSS_SEAT_OCCUPIED);
     }
   }
 }

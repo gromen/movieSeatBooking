@@ -7,6 +7,7 @@
     "serve": "vite preview"
   },
   "devDependencies": {
+    "@types/node": "^15.3.0",
     "sass": "^1.32.13",
     "vite": "^2.3.3"
   }
