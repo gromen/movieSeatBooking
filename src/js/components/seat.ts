@@ -36,12 +36,12 @@ export default class Seat {
     seat.classList.toggle(this.CSS_SEAT_SELECTED, !seat.classList.contains(this.CSS_SEAT_SELECTED));
 
     this.updateTextSummary();
-    this.saveMovieData(this.getSelectedSeats, this.selectedCurrentValue);
+    this.saveMovieData(this.getSelectedSeats(), this.selectedCurrentValue);
   };
 
   selectOnChangeHandler = () => {
     this.updateTextSummary();
-    this.saveMovieData(this.getSelectedSeats, this.selectedCurrentValue);
+    this.saveMovieData(this.getSelectedSeats(), this.selectedCurrentValue);
   }
 
   mountAllSeats() {
