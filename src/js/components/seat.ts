@@ -14,42 +14,34 @@ export default class Seat {
     this.seats = [...this.container!.querySelectorAll('.js-c-seatBooking__seat')] as Array<HTMLElement>;
     this.select = document.querySelector('#selectMovie');
     this.textSummary = <HTMLElement> document.querySelector('.js-c-seatBooking__summary');
-    // @ts-ignore
   }
 
   mount() {
     this.updateTextSummary();
     this.mountOccupiedSeats();
     this.attachEvents();
-    this.totalPrice;
   }
 
   attachEvents() {
     this.seats.forEach(seat => seat.addEventListener('click', () => {
-      if (seat.classList.contains(this.CSS_SEAT_OCCUPIED)) {
-        return;
+      if (!seat.classList.contains(this.CSS_SEAT_OCCUPIED)) {
+        this.clickHandler(seat);
       }
-
-      this.clickHandler(seat);
     }));
 
-    this.select?.addEventListener('change', this.selectOnChangeHandler);
+    this.select?.addEventListener('change', this.selectOnChangeHandler, false);
   }
 
   clickHandler = (seat) => {
-    if (seat.classList.contains(this.CSS_SEAT_SELECTED)) {
-      seat.classList.remove(this.CSS_SEAT_SELECTED);
-    } else {
-      seat.classList.add(this.CSS_SEAT_SELECTED);
-    }
+    seat.classList.toggle(this.CSS_SEAT_SELECTED, !seat.classList.contains(this.CSS_SEAT_SELECTED));
 
     this.updateTextSummary();
-    this.saveMovieData(this.getSelectedSeats(), this.selectValue);
+    this.saveMovieData(this.getSelectedSeats, this.selectedCurrentValue);
   };
 
   selectOnChangeHandler = () => {
     this.updateTextSummary();
-    this.saveMovieData(this.getSelectedSeats(), this.selectValue);
+    this.saveMovieData(this.getSelectedSeats, this.selectedCurrentValue);
   }
 
   mountAllSeats() {
@@ -66,24 +58,25 @@ export default class Seat {
     }
   }
 
-  setSelected(seats) {
-    return seats.filter(seat => seat.classList.contains(this.CSS_SEAT_SELECTED)).length;
+  get allSelectedLength() {
+    return this.seats.filter(seat => seat.classList.contains(this.CSS_SEAT_SELECTED)).length;
   }
 
-  getSelectedSeats = () => this.setSelected(this.seats);
+  get selectedCurrentValue() {
+    return this.select!.value;
+  }
+
+  getSelectedSeats = () => this.allSelectedLength;
 
   saveMovieData(selectedIndex, selectedPrice) {
     localStorage.setItem('selectedMovieIndex', selectedIndex);
     localStorage.setItem('selectedMoviePrice', selectedPrice);
   }
 
-  get selectValue() {
-    return this.select!.value;
-  }
-
   updateTextSummary = () => {
-    this.textSummary!.innerHTML = `You have selected ${this.getSelectedSeats()} for a price ${this.totalPrice()}$`
+    this.textSummary!.innerHTML =
+      `You have selected ${this.getSelectedSeats()} for a price ${this.totalPrice()}$`
   }
 
-  totalPrice = () => this.getSelectedSeats() * parseInt(this.selectValue, 10)
+  totalPrice = () => this.getSelectedSeats() * parseInt(this.selectedCurrentValue, 10)
 }
