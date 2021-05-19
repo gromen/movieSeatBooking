@@ -15,7 +15,8 @@
   &__seats {
     display: flex;
     flex-wrap: wrap;
-    width: 215px;
+    width: 250px;
+    justify-content: space-between;
   }
 
   &__seat {
@@ -27,7 +28,7 @@
     width: 20px;
     background: grey;
 
-    &:nth-child(7) {
+    &:nth-child(8n) {
       margin-right: 0;
     }
 
@@ -39,5 +40,24 @@
       background-color: red;
     }
   }
+}
+
+.movie-container {
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+select {
+  background-color: #fff;
+  border: 0;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-left: 10px;
+  padding: 5px 15px 5px 15px;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 

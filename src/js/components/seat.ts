@@ -1,14 +1,18 @@
 export default class Seat {
   CSS_SEAT_SELECTED = 'c-seatBooking__seat--selected';
   CSS_SEAT_OCCUPIED = 'c-seatBooking__seat--occupied';
+  ALL_SEATS_AMOUNT = 40;
 
-  constructor(classContainer) {
+  container:HTMLElement | null;
+  seats:Array<HTMLElement>;
+
+  constructor(classContainer: string) {
     this.container = document.querySelector(classContainer);
-    this.mount();
+    this.mountAllSeats();
+    this.seats = [...this.container!.querySelectorAll('.js-c-seatBooking__seat')] as Array<HTMLElement>;
   }
 
   mount() {
-    this.mountAllSeats();
     this.mountOccupiedSeats();
     this.attachEvents();
   }
@@ -30,17 +34,15 @@ export default class Seat {
   mountAllSeats() {
     let seat;
 
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < this.ALL_SEATS_AMOUNT; i++) {
       seat = document.createElement('div');
       seat.setAttribute('class', 'c-seatBooking__seat js-c-seatBooking__seat');
-      this.container.appendChild(seat);
+      this.container!.appendChild(seat);
     }
   }
 
   mountOccupiedSeats() {
-    this.seats = [...document.querySelectorAll('.js-c-seatBooking__seat')];
-
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < this.ALL_SEATS_AMOUNT; i++) {
       this.seats[Math.floor(Math.random() * 39 + 1)].classList.add(this.CSS_SEAT_OCCUPIED);
     }
   }
