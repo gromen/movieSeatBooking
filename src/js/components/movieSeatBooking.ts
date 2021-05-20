@@ -1,4 +1,4 @@
-export default class Seat {
+export default class movieSeatBooking{
   CSS_SEAT_SELECTED = 'c-seatBooking__seat--selected';
   CSS_SEAT_OCCUPIED = 'c-seatBooking__seat--occupied';
   ALL_SEATS_AMOUNT = 40;
@@ -17,8 +17,8 @@ export default class Seat {
   }
 
   mount() {
+    this.retrieveSelectedSeatsAfterRefresh();
     this.updateTextSummary();
-    this.mountOccupiedSeats();
     this.attachEvents();
   }
 
@@ -36,12 +36,13 @@ export default class Seat {
     seat.classList.toggle(this.CSS_SEAT_SELECTED, !seat.classList.contains(this.CSS_SEAT_SELECTED));
 
     this.updateTextSummary();
-    this.saveMovieData(this.getSelectedSeats(), this.selectedCurrentValue);
+    this.selectedSeatsIndices();
   };
 
   selectOnChangeHandler = () => {
     this.updateTextSummary();
-    this.saveMovieData(this.getSelectedSeats(), this.selectedCurrentValue);
+    this.updateOptionSelected();
+    // this.saveMovieData(this.getSelectedSeats(), this.optionSelectedValue);
   }
 
   mountAllSeats() {
@@ -52,25 +53,52 @@ export default class Seat {
     }
   }
 
-  mountOccupiedSeats() {
-    for (let i = 0; i < this.ALL_SEATS_AMOUNT; i++) {
-      this.seats[Math.floor(Math.random() * 39 + 1)].classList.add(this.CSS_SEAT_OCCUPIED);
-    }
-  }
-
   get allSelectedLength() {
     return this.seats.filter(seat => seat.classList.contains(this.CSS_SEAT_SELECTED)).length;
   }
 
-  get selectedCurrentValue() {
+  get optionSelectedValue() {
     return this.select!.value;
+  }
+
+  get optionSelectedIndex() {
+    return this.select!.selectedIndex;
+  }
+
+  getSelectedOption(index)  {
+    return this.select!.selectedIndex = index;
   }
 
   getSelectedSeats = () => this.allSelectedLength;
 
-  saveMovieData(selectedIndex, selectedPrice) {
-    localStorage.setItem('selectedMovieIndex', selectedIndex);
-    localStorage.setItem('selectedMoviePrice', selectedPrice);
+  selectedSeatsIndices() {
+    const selectedSeats =
+      document.querySelectorAll(`.${this.CSS_SEAT_SELECTED}, ${this.CSS_SEAT_OCCUPIED}`);
+    console.log(selectedSeats);
+    this.getSelectedOption(localStorage.getItem('optionSelectedIndex'));
+
+    // @ts-ignore
+    const selectedSeatsIndices = [...selectedSeats].map(seat => this.seats.indexOf(seat));
+    console.log(selectedSeatsIndices);
+    localStorage.setItem('selectedSeatsIndices', JSON.stringify(selectedSeatsIndices));
+
+  }
+
+  retrieveSelectedSeatsAfterRefresh() {
+    const selectedSeatsIndices =
+      JSON.parse(<string>localStorage.getItem('selectedSeatsIndices'));
+
+    if (selectedSeatsIndices != null && selectedSeatsIndices.length > 0) {
+      this.seats.forEach((seat, index) => {
+        if (selectedSeatsIndices.indexOf(index) > -1) {
+          seat.classList.add(this.CSS_SEAT_SELECTED);
+        }
+      });
+    }
+  }
+
+  updateOptionSelected() {
+    localStorage.setItem('optionSelectedIndex', `${this.optionSelectedIndex}`);
   }
 
   updateTextSummary = () => {
@@ -78,5 +106,5 @@ export default class Seat {
       `You have selected ${this.getSelectedSeats()} for a price ${this.totalPrice()}$`
   }
 
-  totalPrice = () => this.getSelectedSeats() * parseInt(this.selectedCurrentValue, 10)
+  totalPrice = () => this.getSelectedSeats() * parseInt(this.optionSelectedValue, 10)
 }
