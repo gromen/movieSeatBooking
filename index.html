@@ -4,13 +4,17 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>Movie Seat booking App</title>
   </head>
   <body>
     <header>
-      <div class="movie-container">
+      <h1>Movie Seat booking</h1>
+      <div class="cinemaHall__selectWrapper">
         <label for="selectMovie">Pick a movie:</label>
-        <select id="selectMovie">
+        <select
+          id="selectMovie"
+          class="cinemaHall__select js-cinemaHall__select"
+        >
           <option value="10">Avengers: Endgame ($10)</option>
           <option value="12">Joker ($12)</option>
           <option value="8">Toy Story 4 ($8)</option>
@@ -18,23 +22,31 @@
         </select>
       </div>
     </header>
-    <main>
-      <ul class="showcase">
+    <main class="cinemaHall">
+      <div class="cinemaHall__screen"></div>
+      <ul class="cinemaHall__showcase">
         <li>
-          <div class="seat"></div>
+          <div class="cinemaHall__seat"></div>
           <small>N/A</small>
         </li>
         <li>
-          <div class="seat selected"></div>
+          <div class="cinemaHall__seat cinemaHall__seat--selected"></div>
           <small>Selected</small>
         </li>
         <li>
-          <div class="seat occupied"></div>
+          <div class="cinemaHall__seat cinemaHall__seat--occupied"></div>
           <small>Occupied</small>
         </li>
       </ul>
-      <div class="c-seatBooking js-c-seatBooking"></div>
-      <div class="c-seatBooking__seats"></div>
+      <div class="js-cinemaHall">
+        <div class="cinemaHall__seats js-cinemaHall__seats"></div>
+        <div class="js-cinemaHall__summaryBooking">
+          You have selected {{SELECTED_SEATS}} for a price {{SELECTED_SEATS}}$
+        </div>
+      </div>
+      <button type="button" class="js-cinemaHall__btnBuy d-none">
+        Book selected seats
+      </button>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
