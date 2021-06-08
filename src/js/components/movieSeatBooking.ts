@@ -6,9 +6,10 @@ export default class movieSeatBooking {
 
   container: HTMLElement | null;
   seats: Array<HTMLElement> = [];
+  seatsOccupiedAndSelected: Array<HTMLElement> = [];
   select: HTMLSelectElement | null;
   textSummary: HTMLElement | null;
-  buttonBuy: HTMLButtonElement | null;
+  buttonOrder: HTMLButtonElement | null;
 
   constructor(classContainer: string) {
     this.container = document.querySelector(classContainer);
@@ -18,6 +19,7 @@ export default class movieSeatBooking {
     }
 
     this.mountAllSeats();
+
     this.seats = [
       ...this.container!.querySelectorAll('.js-cinemaHall__seat'),
     ] as Array<HTMLElement>;
@@ -25,13 +27,21 @@ export default class movieSeatBooking {
     this.textSummary = <HTMLElement>(
       document.querySelector('.js-cinemaHall__summaryBooking')
     );
-    this.buttonBuy = document.querySelector('.js-cinemaHall__btnBuy');
-  }
+    this.buttonOrder = document.querySelector('.js-cinemaHall__btnBuy');
 
-  mount() {
     this.retrieveSelectedSeatsAfterRefresh();
     this.updateTextSummary();
     this.attachEvents();
+    this.btnOrderVisibilityHandler();
+  }
+
+  btnOrderVisibilityHandler() {
+    return this.buttonOrder?.classList.toggle(
+      this.CSS_HIDDEN,
+      !this.seats.some((seat) =>
+        seat.classList.contains(this.CSS_SEAT_SELECTED)
+      )
+    );
   }
 
   attachEvents() {
@@ -44,7 +54,11 @@ export default class movieSeatBooking {
     );
 
     this.select?.addEventListener('change', this.selectOnChangeHandler, false);
-    this.buttonBuy?.addEventListener('click', this.btnBuyClickHandler, false);
+    this.buttonOrder?.addEventListener(
+      'click',
+      this.btnOrderClickHandler,
+      false
+    );
   }
 
   clickHandler = (seat) => {
@@ -52,10 +66,11 @@ export default class movieSeatBooking {
       this.CSS_SEAT_SELECTED,
       !seat.classList.contains(this.CSS_SEAT_SELECTED)
     );
-    this.buttonBuy?.classList.toggle(
-      this.CSS_HIDDEN,
-      this.allSelectedLength === 0
-    );
+
+    this.seatsOccupiedAndSelected.push(seat);
+    console.log(this.seatsOccupiedAndSelected);
+    this.btnOrderVisibilityHandler();
+
     this.updateTextSummary();
     this.selectedSeatsIndices();
   };
@@ -63,26 +78,6 @@ export default class movieSeatBooking {
   selectOnChangeHandler = () => {
     this.updateTextSummary();
     this.updateOptionSelected();
-  };
-
-  btnBuyClickHandler = () => {
-    let occupiedIndices: any = [];
-
-    if (this.selectedSeatIndices.length <= 1) return;
-
-    console.log(this.selectedSeatIndices);
-
-    this.seats.forEach((seat, index) => {
-      if (this.selectedSeatIndices.indexOf(index) > -1) {
-        seat.classList.remove(this.CSS_SEAT_SELECTED);
-        seat.classList.add(this.CSS_SEAT_OCCUPIED);
-        occupiedIndices.push(index);
-      }
-      localStorage.setItem(
-        'occupiedSeatIndices',
-        JSON.stringify(occupiedIndices)
-      );
-    });
   };
 
   mountAllSeats() {
@@ -94,9 +89,9 @@ export default class movieSeatBooking {
   }
 
   get allSelectedLength() {
-    return this.seats.filter((seat) =>
-      seat.classList.contains(this.CSS_SEAT_SELECTED)
-    ).length;
+    return this.seats.filter((seat) => {
+      seat.classList.contains(this.CSS_SEAT_SELECTED);
+    }).length;
   }
 
   get optionSelectedValue() {
@@ -127,12 +122,26 @@ export default class movieSeatBooking {
 
   selectedSeatsIndices() {
     this.getSelectedOption(localStorage.getItem('optionSelectedIndex'));
-
     localStorage.setItem(
       'selectedSeatsIndices',
       JSON.stringify(this.selectedSeatIndices)
     );
   }
+
+  btnOrderClickHandler = () => {
+    if (this.selectedSeatIndices.length < 1) return;
+
+    this.seats.forEach((seat, index) => {
+      if (this.selectedSeatIndices.indexOf(index) > -1) {
+        seat.classList.remove(this.CSS_SEAT_SELECTED);
+        seat.classList.add(this.CSS_SEAT_OCCUPIED);
+      }
+      localStorage.setItem(
+        'occupiedSeatIndices',
+        JSON.stringify(this.occupiedSeatIndices)
+      );
+    });
+  };
 
   retrieveSelectedSeatsAfterRefresh() {
     const selectedSeatsIndices = JSON.parse(
@@ -142,22 +151,19 @@ export default class movieSeatBooking {
       <string>localStorage.getItem('occupiedSeatIndices')
     );
 
-    if (
-      selectedSeatsIndices != null &&
-      selectedSeatsIndices.length > 0 &&
-      occupiedSeatIndices != null &&
-      occupiedSeatIndices.length === 0
-    ) {
-      console.log('assa');
+    if (selectedSeatsIndices?.length > 0 || occupiedSeatIndices?.length > 0) {
       this.seats.forEach((seat, index) => {
         if (selectedSeatsIndices.indexOf(index) > -1) {
           seat.classList.add(this.CSS_SEAT_SELECTED);
         }
-      });
-    } else {
-      this.seats.forEach((seat, index) => {
-        if (selectedSeatsIndices.indexOf(index) > -1) {
+
+        if (
+          occupiedSeatIndices.indexOf(index) > -1 ||
+          selectedSeatsIndices.indexOf(index) > -1
+        ) {
+          seat.classList.remove(this.CSS_SEAT_SELECTED);
           seat.classList.add(this.CSS_SEAT_OCCUPIED);
+          this.seatsOccupiedAndSelected.push(seat);
         }
       });
     }
