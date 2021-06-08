@@ -68,7 +68,6 @@ export default class movieSeatBooking {
     );
 
     this.seatsOccupiedAndSelected.push(seat);
-    console.log(this.seatsOccupiedAndSelected);
     this.btnOrderVisibilityHandler();
 
     this.updateTextSummary();
@@ -89,9 +88,15 @@ export default class movieSeatBooking {
   }
 
   get allSelectedLength() {
-    return this.seats.filter((seat) => {
-      seat.classList.contains(this.CSS_SEAT_SELECTED);
-    }).length;
+    let arraySelected: HTMLElement[] = [];
+
+    this.seats.map((seat) => {
+      if (seat.classList.contains(this.CSS_SEAT_SELECTED)) {
+        arraySelected.push(seat);
+      }
+    });
+
+    return arraySelected.length;
   }
 
   get optionSelectedValue() {
@@ -102,15 +107,9 @@ export default class movieSeatBooking {
     return this.select!.selectedIndex;
   }
 
-  get selectedSeatIndices() {
-    return [...document.querySelectorAll(`.${this.CSS_SEAT_SELECTED}`)].map(
-      (seat) => this.seats.indexOf(seat as HTMLElement)
-    );
-  }
-
-  get occupiedSeatIndices() {
-    return [...document.querySelectorAll(`.${this.CSS_SEAT_OCCUPIED}`)].map(
-      (seat) => this.seats.indexOf(seat as HTMLElement)
+  seatIndices(selected: string) {
+    return [...document.querySelectorAll(`.${selected}`)].map((seat) =>
+      this.seats.indexOf(seat as HTMLElement)
     );
   }
 
@@ -124,21 +123,21 @@ export default class movieSeatBooking {
     this.getSelectedOption(localStorage.getItem('optionSelectedIndex'));
     localStorage.setItem(
       'selectedSeatsIndices',
-      JSON.stringify(this.selectedSeatIndices)
+      JSON.stringify(this.seatIndices(this.CSS_SEAT_SELECTED))
     );
   }
 
   btnOrderClickHandler = () => {
-    if (this.selectedSeatIndices.length < 1) return;
+    if (this.seatIndices(this.CSS_SEAT_SELECTED).length < 1) return;
 
     this.seats.forEach((seat, index) => {
-      if (this.selectedSeatIndices.indexOf(index) > -1) {
+      if (this.seatIndices(this.CSS_SEAT_SELECTED).indexOf(index) > -1) {
         seat.classList.remove(this.CSS_SEAT_SELECTED);
         seat.classList.add(this.CSS_SEAT_OCCUPIED);
       }
       localStorage.setItem(
         'occupiedSeatIndices',
-        JSON.stringify(this.occupiedSeatIndices)
+        JSON.stringify(this.seatIndices(this.CSS_SEAT_OCCUPIED))
       );
     });
   };
